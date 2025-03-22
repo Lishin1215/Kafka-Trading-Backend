@@ -1,0 +1,13 @@
+server:
+  port: 8083
+
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092 
+    consumer:
+      group-id: market-data-group
+      
+  autoconfigure:
+    exclude: 
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
