@@ -78,6 +78,17 @@ resource "aws_iam_role_policy_attachment" "eks_node_policy_attachment" {
   role       = aws_iam_role.eks_node_role.name // 指定角色名稱
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy" // 附加的策略 ARN
 }
+resource "aws_iam_role_policy_attachment" "eks_node_ecr" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_node_cni" {
+  role       = aws_iam_role.eks_node_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+
 
 // 建立 VPC，用於 EKS 集群的網路
 resource "aws_vpc" "eks_vpc" {

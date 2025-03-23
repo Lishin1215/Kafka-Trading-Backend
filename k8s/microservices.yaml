@@ -1,0 +1,121 @@
+# =================== User Service ====================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: <account-id>.dkr.ecr.us-east-1.amazonaws.com/user-service:latest
+        ports:
+        - containerPort: 8081
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://user-postgres-postgresql:5432/userdb
+        - name: SPRING_DATASOURCE_USERNAME
+          value: user
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: password
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: kafka.default.svc.cluster.local:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: user-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+
+# =================== Order Service ====================
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: order-service
+        image: <account-id>.dkr.ecr.us-east-1.amazonaws.com/order-service:latest
+        ports:
+        - containerPort: 8082
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://order-postgres-postgresql:5432/orderdb
+        - name: SPRING_DATASOURCE_USERNAME
+          value: orderuser
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: orderpass
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: kafka.default.svc.cluster.local:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: order-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+
+# =================== Market Data Service ====================
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: market-data-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: market-data-service
+  template:
+    metadata:
+      labels:
+        app: market-data-service
+    spec:
+      containers:
+      - name: market-data-service
+        image: <account-id>.dkr.ecr.us-east-1.amazonaws.com/market-data-service:latest
+        ports:
+        - containerPort: 8083
+        env:
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: kafka.default.svc.cluster.local:9092
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: market-data-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: market-data-service
+  ports:
+    - port: 8083
+      targetPort: 8083
